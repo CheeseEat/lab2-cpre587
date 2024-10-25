@@ -99,7 +99,7 @@ class Layer {
     enum class InfType { NAIVE, THREADED, TILED, SIMD };
 
     // Layer Type
-    enum class LayerType { NONE, CONVOLUTIONAL, DENSE, SOFTMAX, MAX_POOLING };
+    enum class LayerType { NONE, CONVOLUTIONAL, DENSE, SOFTMAX, MAX_POOLING, FLATTEN };
 
    public:
     // Contructors

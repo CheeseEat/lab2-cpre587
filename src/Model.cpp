@@ -9,11 +9,12 @@ namespace ML {
 const LayerData& Model::inference(const LayerData& inData, const Layer::InfType infType) const {
     assert(layers.size() > 0 && "There must be at least 1 layer to perform inference");
     inferenceLayer(inData, 0, infType);
-
+    Timer timer("Layer Inference");
+    timer.start();
     for (std::size_t i = 1; i < layers.size(); i++) {
         inferenceLayer(layers[i - 1]->getOutputData(), i, infType);
     }
-
+    timer.stop();
     return layers.back()->getOutputData();
 }
 
