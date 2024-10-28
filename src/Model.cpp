@@ -39,6 +39,9 @@ const LayerData& Model::inferenceLayer(const LayerData& inData, const int layerN
     case Layer::InfType::SIMD:
         layer.computeSIMD(inData);
         break;
+    case Layer::InfType::ACCELERATED:
+        layer.computeAccelerated(inData);
+        break;
     default:
         assert(false && "Inference Type not implemented");
     }

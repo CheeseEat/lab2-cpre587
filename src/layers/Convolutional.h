@@ -7,12 +7,18 @@
 namespace ML {
 class ConvolutionalLayer : public Layer {
    public:
-    ConvolutionalLayer(const LayerParams inParams, const LayerParams outParams, const LayerParams weightParams, const LayerParams biasParams)
+    ConvolutionalLayer(const LayerParams inParams, const LayerParams outParams, const LayerParams weightParams, const fp32 maxValue, const fp32 minValue, const fp32 scaleValueWeight, const LayerParams biasParams, const LayerParams sumOfWeights)
         : Layer(inParams, outParams, LayerType::CONVOLUTIONAL),
           weightParam(weightParams),
           weightData(weightParams),
           biasParam(biasParams),
-          biasData(biasParams) {}
+          maxValues(maxValue),
+          minValues(minValue),
+          scaleValueInputs(127.0/(maxValue)),
+          scaleValueWeights(127.0/scaleValueWeight),
+          zero_points(-127),
+          biasData(biasParams),
+          sumOfWeightData(sumOfWeights) {}
 
     // Getters
     const LayerParams& getWeightParams() const { return weightParam; }
@@ -25,6 +31,7 @@ class ConvolutionalLayer : public Layer {
         Layer::allocLayer();
         weightData.loadData();
         biasData.loadData();
+        sumOfWeightData.loadData();
     }
 
     // Fre all resources allocated for the layer
@@ -32,6 +39,7 @@ class ConvolutionalLayer : public Layer {
         Layer::freeLayer();
         weightData.freeData();
         biasData.freeData();
+        sumOfWeightData.freeData();
     }
 
     // Virtual functions
@@ -39,13 +47,24 @@ class ConvolutionalLayer : public Layer {
     virtual void computeThreaded(const LayerData& dataIn) const override;
     virtual void computeTiled(const LayerData& dataIn) const override;
     virtual void computeSIMD(const LayerData& dataIn) const override;
+    virtual void computeAccelerated(const LayerData& dataIn) const override;
 
    private:
+
+    fp32 maxValues;
+    fp32 minValues;
+    fp32 scaleValueInputs;
+    fp32 scaleValueWeights;
+    int8_t zero_points;
+
     LayerParams weightParam;
     LayerData weightData;
 
     LayerParams biasParam;
     LayerData biasData;
+
+    LayerData sumOfWeightData;
+
 };
 
 }  // namespace ML

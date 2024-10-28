@@ -7,12 +7,17 @@
 namespace ML {
 class DenseLayer : public Layer {
    public:
-    DenseLayer(const LayerParams inParams, const LayerParams outParams, const LayerParams weightParams, const LayerParams biasParams)
+    DenseLayer(const LayerParams inParams, const LayerParams outParams, const LayerParams weightParams, const LayerParams biasParams, const fp32 max, const fp32 min, const fp32 scaleWeights)
         : Layer(inParams, outParams, LayerType::DENSE),
           weightParam(weightParams),
           weightData(weightParams),
           biasParam(biasParams),
-          biasData(biasParams) {}
+          biasData(biasParams),
+          maxValue(max),
+          minValue(min),
+          scaleInput(127.0 / max),
+          scaleWeight(127.0 / scaleWeights)
+          zeroPoint(-127), {}
 
     // Getters
     const LayerParams& getWeightParams() const { return weightParam; }
@@ -39,8 +44,15 @@ class DenseLayer : public Layer {
     virtual void computeThreaded(const LayerData& dataIn) const override;
     virtual void computeTiled(const LayerData& dataIn) const override;
     virtual void computeSIMD(const LayerData& dataIn) const override;
+    virtual void computeAccelerated(const LayerData& dataIn) const override;
 
    private:
+    fp32 maxValues;
+    fp32 minValues;
+    fp32 scaleValueInputs;
+    fp32 scaleValueWeights;
+    int8_t zero_points;
+
     LayerParams weightParam;
     LayerData weightData;
 

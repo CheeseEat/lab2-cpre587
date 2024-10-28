@@ -62,6 +62,9 @@ void DenseLastLayer::computeSIMD(const LayerData& dataIn) const {
     // Don't have to do, future lab
 }
 
-// JOE: Might need to override alloc data?
+void DenseLastLayer::computeAccelerated(const LayerData& dataIn) const {
+    // TODO: Your Code Here...
+    // Don't have to do, future lab
+}
 
 }  // namespace ML

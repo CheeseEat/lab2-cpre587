@@ -48,6 +48,19 @@ void FlattenLayer::computeSIMD(const LayerData& dataIn) const {
     // Don't have to do, future lab
 }
 
-// JOE: Might need to override alloc data?
+void FlattenLayer::computeAccelerated(const LayerData& dataIn) const {
+    LayerData& outputData = getOutputData();
+
+    const LayerParams& inputParams  = dataIn.getParams();
+
+    int height = inputParams.dims[0];
+    int width = inputParams.dims[1];
+    int depth = inputParams.dims[2];
+
+    for(int ind = 0; ind < depth * height * width; ind++)
+    {
+        outputData.get<fp32>(ind) = dataIn.get<fp32>(ind);
+    }
+}
 
 }  // namespace ML
