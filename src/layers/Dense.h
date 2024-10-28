@@ -15,9 +15,9 @@ class DenseLayer : public Layer {
           biasData(biasParams),
           maxValue(max),
           minValue(min),
-          scaleInput(127.0 / max),
-          scaleWeight(127.0 / scaleWeights)
-          zeroPoint(-127), {}
+          scaleValueInputs(127.0 / max),
+          scaleValueWeights(127.0 / scaleWeights),
+          zero_points(-127) {}
 
     // Getters
     const LayerParams& getWeightParams() const { return weightParam; }
@@ -47,8 +47,8 @@ class DenseLayer : public Layer {
     virtual void computeAccelerated(const LayerData& dataIn) const override;
 
    private:
-    fp32 maxValues;
-    fp32 minValues;
+    fp32 maxValue;
+    fp32 minValue;
     fp32 scaleValueInputs;
     fp32 scaleValueWeights;
     int8_t zero_points;

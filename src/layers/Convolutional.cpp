@@ -6,8 +6,8 @@
 #include "../Types.h"
 #include "../Utils.h"
 #include "Layer.h"
-#include "xil_io.h"
-#include "xparameters.h"
+//#include "xil_io.h"
+//#include "xparameters.h"
 #ifdef ZEDBOARD
     #include "xllfifo_hw.h"
 #endif
@@ -46,7 +46,8 @@ void ConvolutionalLayer::computeNaive(const LayerData& dataIn) const
 
     for(int fill = 0; fill < numFilters; fill++)
     {
-        fp32 curBias = biasData.get<fp32>(fill);
+        //fp32 curBias = biasData.get<fp32>(fill);
+        ui8 curBias = biasData.get<ui8>(fill);
         for(int out_h = 0; out_h < outputHeight; out_h++)
         {
             for(int out_w = 0; out_w < outputWidth; out_w++)
@@ -64,18 +65,20 @@ void ConvolutionalLayer::computeNaive(const LayerData& dataIn) const
                             int iInd = (out_h + fill_h) * (width * depth) + (out_w + fill_w) * depth + dep;
                             int fInd = fill_h * (filterWidth * depth * numFilters) + fill_w * (depth * numFilters) + dep * numFilters + fill;
                             float inputValue = dataIn.get<fp32>(iInd);
-                            float filterValue = weightData.get<fp32>(fInd);
-
+                            ui8 quantized_inputValue= round(scaleValueInputs*inputValue) + zero_points;
+                            //float filterValue = weightData.get<fp32>(fInd);
+                            ui8 quantized_filterValue = weightData.get<ui8>(fInd);
 
                             // Multiply and accumulate
-                            outputValue += inputValue * filterValue;
+                            outputValue += quantized_inputValue * quantized_filterValue;
 
                         }
                     }
                 }
                 
                 int oInd = out_h * (outputWidth * numFilters) + out_w * numFilters + fill;
-                outputData.get<fp32>(oInd) = std::max(0.0f, outputValue + curBias);
+                fp32 out = (outputValue - (zero_points*sumOfWeightData.get<fp32>(fill)))/(scaleValueInputs*scaleValueWeights);
+                outputData.get<fp32>(oInd) = std::max(0.0f, out + curBias);
 
 
             }

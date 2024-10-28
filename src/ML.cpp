@@ -41,8 +41,11 @@ Model buildToyModel(const Path modelPath) {
     model.addLayer<ConvolutionalLayer>(
         LayerParams{sizeof(fp32), {64, 64, 3}},                                    // Input Data
         LayerParams{sizeof(fp32), {60, 60, 32}},                                   // Output Data
-        LayerParams{sizeof(fp32), {5, 5, 3, 32}, modelPath / "conv1_weights.bin"}, // Weights
-        LayerParams{sizeof(fp32), {32}, modelPath / "conv1_biases.bin"}            // Bias
+        // LayerParams{sizeof(fp32), {5, 5, 3, 32}, modelPath / "conv1_weights.bin"}, // Weights
+        // LayerParams{sizeof(fp32), {32}, modelPath / "conv1_biases.bin"}            // Bias
+        LayerParams{sizeof(ui8), {5, 5, 3, 32}, modelPath / "conv1_quantized_weights.bin"}, // Weights
+        (1-.47324), 0.0, 0.30287936,
+        LayerParams{sizeof(ui8), {32}, modelPath / "conv1_quantized_biases.bin"}            // Bias
     );
 
     // --- Conv 2: L2 ---
@@ -52,8 +55,9 @@ Model buildToyModel(const Path modelPath) {
     model.addLayer<ConvolutionalLayer>(
         LayerParams{sizeof(fp32), {60, 60, 32}},                                    // Input Data
         LayerParams{sizeof(fp32), {56, 56, 32}},                                   // Output Data
-        LayerParams{sizeof(fp32), {5, 5, 32, 32}, modelPath / "conv2_weights.bin"}, // Weights
-        LayerParams{sizeof(fp32), {32}, modelPath / "conv2_biases.bin"}            // Bias
+        LayerParams{sizeof(ui8), {5, 5, 32, 32}, modelPath / "conv2_quantized_weights.bin"}, // Weights
+        (1.33663-.039343), 0.0, 0.48677802,
+        LayerParams{sizeof(ui8), {32}, modelPath / "conv2_quantized_biases.bin"}            // Bias
     );
 
     // --- MPL 1: L3 ---
@@ -72,8 +76,9 @@ Model buildToyModel(const Path modelPath) {
     model.addLayer<ConvolutionalLayer>(
         LayerParams{sizeof(fp32), {28, 28, 32}},                                    // Input Data
         LayerParams{sizeof(fp32), {26, 26, 64}},                                   // Output Data
-        LayerParams{sizeof(fp32), {3, 3, 32, 64}, modelPath / "conv3_weights.bin"}, // Weights
-        LayerParams{sizeof(fp32), {64}, modelPath / "conv3_biases.bin"}            // Bias
+        LayerParams{sizeof(ui8), {3, 3, 32, 64}, modelPath / "conv3_quantized_weights.bin"}, // Weights
+        2.5, 0.0, 0.692378,
+        LayerParams{sizeof(ui8), {64}, modelPath / "conv3_quantized_biases.bin"}            // Bias
     );
 
     // --- Conv 4: L5 ---
@@ -83,8 +88,9 @@ Model buildToyModel(const Path modelPath) {
     model.addLayer<ConvolutionalLayer>(
         LayerParams{sizeof(fp32), {26, 26, 64}},                                    // Input Data
         LayerParams{sizeof(fp32), {24, 24, 64}},                                   // Output Data
-        LayerParams{sizeof(fp32), {3, 3, 64, 64}, modelPath / "conv4_weights.bin"}, // Weights
-        LayerParams{sizeof(fp32), {64}, modelPath / "conv4_biases.bin"}            // Bias
+        LayerParams{sizeof(ui8), {3, 3, 64, 64}, modelPath / "conv4_quantized_weights.bin"}, // Weights
+        1.7, 0.0, 0.541547,
+        LayerParams{sizeof(ui8), {64}, modelPath / "conv4_quantized_biases.bin"}            // Bias
     );
 
     // --- MPL 2: L6 ---
@@ -103,8 +109,9 @@ Model buildToyModel(const Path modelPath) {
     model.addLayer<ConvolutionalLayer>(
         LayerParams{sizeof(fp32), {12, 12, 64}},                                    // Input Data
         LayerParams{sizeof(fp32), {10, 10, 64}},                                   // Output Data
-        LayerParams{sizeof(fp32), {3, 3, 64, 64}, modelPath / "conv5_weights.bin"}, // Weights
-        LayerParams{sizeof(fp32), {64}, modelPath / "conv5_biases.bin"}            // Bias
+        LayerParams{sizeof(ui8), {3, 3, 64, 64}, modelPath / "conv5_quantized_weights.bin"}, // Weights
+        1.87, 0.0, 0.536679,
+        LayerParams{sizeof(ui8), {64}, modelPath / "conv5_quantized_biases.bin"}            // Bias
     );
 
     // --- Conv 6: L8 ---
@@ -114,8 +121,9 @@ Model buildToyModel(const Path modelPath) {
     model.addLayer<ConvolutionalLayer>(
         LayerParams{sizeof(fp32), {10, 10, 64}},                                    // Input Data
         LayerParams{sizeof(fp32), {8, 8, 128}},                                   // Output Data
-        LayerParams{sizeof(fp32), {3, 3, 64, 128}, modelPath / "conv6_weights.bin"}, // Weights
-        LayerParams{sizeof(fp32), {128}, modelPath / "conv6_biases.bin"}            // Bias
+        LayerParams{sizeof(ui8), {3, 3, 64, 128}, modelPath / "conv6_quantized_weights.bin"}, // Weights
+        2.11, 0.0, 0.510655,
+        LayerParams{sizeof(ui8), {128}, modelPath / "conv6_quantized_biases.bin"}            // Bias
     );
 
     // --- MPL 3: L9 ---
@@ -141,11 +149,12 @@ Model buildToyModel(const Path modelPath) {
     // Input shape: 2048
     // Output shape: 256
 
-  model.addLayer<DenseLayer>(
+    model.addLayer<DenseLayer>(
         LayerParams{sizeof(fp32), {2048}},                                    // Input Data
         LayerParams{sizeof(fp32), {256}},                                   // Output Data
-        LayerParams{sizeof(fp32), {2048*256}, modelPath / "dense1_weights.bin"}, // Weights
-       LayerParams{sizeof(fp32), {256}, modelPath / "dense1_biases.bin"}            // Bias
+        LayerParams{sizeof(ui8), {2048*256}, modelPath / "dense_quantized_weights.bin"}, // Weights
+        3.2, 0.0, 0.557585,
+        LayerParams{sizeof(ui8), {256}, modelPath / "dense_quantized_biases.bin"}            // Bias
     );
 
     // --- Dense 2: L12 ---
@@ -155,8 +164,9 @@ Model buildToyModel(const Path modelPath) {
     model.addLayer<DenseLastLayer>(
         LayerParams{sizeof(fp32), {256}},                                    // Input Data
         LayerParams{sizeof(fp32), {200}},                                   // Output Data
-        LayerParams{sizeof(fp32), {256*200}, modelPath / "dense2_weights.bin"}, // Weights
-        LayerParams{sizeof(fp32), {200}, modelPath / "dense2_biases.bin"}            // Bias
+        LayerParams{sizeof(ui8), {256*200}, modelPath / "dense1_quantized_weights.bin"}, // Weights
+        6.63967, 0.0, 1.32412,
+        LayerParams{sizeof(ui8), {200}, modelPath / "dense1_quantized_biases.bin"}            // Bias
     );
 
     // --- Softmax 1: L13 ---
