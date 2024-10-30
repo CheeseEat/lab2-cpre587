@@ -7,17 +7,18 @@
 namespace ML {
 class ConvolutionalLayer : public Layer {
    public:
-    ConvolutionalLayer(const LayerParams inParams, const LayerParams outParams, const LayerParams weightParams, const fp32 maxValue, const fp32 minValue, const fp32 scaleValueWeight, const LayerParams biasParams, const LayerParams sumOfWeights)
+    ConvolutionalLayer(const LayerParams inParams, const LayerParams outParams, const LayerParams weightParams, const LayerParams biasParams, 
+    const fp32 maxValue, const fp32 minValue, const fp32 scaleValueWeight, const LayerParams sumOfWeights)
         : Layer(inParams, outParams, LayerType::CONVOLUTIONAL),
           weightParam(weightParams),
           weightData(weightParams),
           biasParam(biasParams),
+          biasData(biasParams),
           maxValues(maxValue),
           minValues(minValue),
           scaleValueInputs(127.0/(maxValue)),
           scaleValueWeights(127.0/scaleValueWeight),
           zero_points(-127),
-          biasData(biasParams),
           sumOfWeightData(sumOfWeights) {}
 
     // Getters
@@ -51,17 +52,18 @@ class ConvolutionalLayer : public Layer {
 
    private:
 
+    LayerParams weightParam;
+    LayerData weightData;
+
+    LayerParams biasParam;
+    LayerData biasData;
+
     fp32 maxValues;
     fp32 minValues;
     fp32 scaleValueInputs;
     fp32 scaleValueWeights;
     int8_t zero_points;
 
-    LayerParams weightParam;
-    LayerData weightData;
-
-    LayerParams biasParam;
-    LayerData biasData;
 
     LayerData sumOfWeightData;
 

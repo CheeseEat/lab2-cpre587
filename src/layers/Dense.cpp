@@ -5,9 +5,12 @@
 #include "../Types.h"
 #include "../Utils.h"
 #include "Layer.h"
-#include "xil_io.h"
-#include "xparameters.h"
-#include "xllfifo_hw.h"
+
+#ifdef ZEDBOARD
+    #include "xil_io.h"
+    #include "xparameters.h"
+    #include "xllfifo_hw.h"
+#endif
 
 
 namespace ML {
