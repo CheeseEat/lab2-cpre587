@@ -41,12 +41,10 @@ Model buildToyModel(const Path modelPath) {
     model.addLayer<ConvolutionalLayer>(
         LayerParams{sizeof(fp32), {64, 64, 3}},                                    // Input Data
         LayerParams{sizeof(fp32), {60, 60, 32}},                                   // Output Data
-        // LayerParams{sizeof(fp32), {5, 5, 3, 32}, modelPath / "conv1_weights.bin"}, // Weights
-        // LayerParams{sizeof(fp32), {32}, modelPath / "conv1_biases.bin"}            // Bias
-        LayerParams{sizeof(int8_t), {5, 5, 3, 32}, modelPath / "test_weight.bin"}, // Weights
-        LayerParams{sizeof(fp32), {32}, modelPath / "test.bin"},            // Bias
+        LayerParams{sizeof(int8_t), {5, 5, 3, 32}, modelPath / "weight_quant.bin"}, // Weights
+        LayerParams{sizeof(fp32), {32}, modelPath / "bias_quant.bin"},            // Bias
         (1-.47324), 0.0, 0.30287936,
-        LayerParams{sizeof(fp32), {32}, modelPath / "testSum.bin"}
+        LayerParams{sizeof(fp32), {32}, modelPath / "weight_sum_0.bin"}
     );
 
     // model.addLayer<ConvolutionalLayer>(
@@ -72,129 +70,134 @@ Model buildToyModel(const Path modelPath) {
     model.addLayer<ConvolutionalLayer>(
         LayerParams{sizeof(fp32), {60, 60, 32}},                                    // Input Data
         LayerParams{sizeof(fp32), {56, 56, 32}},                                   // Output Data
-        LayerParams{sizeof(ui8), {5, 5, 32, 32}, modelPath / "weightTest2.bin"}, // Weights
-        LayerParams{sizeof(ui32), {32}, modelPath / "biasTest2.bin"},            // Bias
+        LayerParams{sizeof(int8_t), {5, 5, 32, 32}, modelPath / "weight_quant_1.bin"}, // Weights
+        //LayerParams{sizeof(int8_t), {5, 5, 32, 32}, modelPath / "conv2d_1_quantized_weights.bin"}, // Weights
+        LayerParams{sizeof(fp32), {32}, modelPath / "bias_quant_1.bin"},            // Bias
         (1.33663-.039343), 0.0, 0.48677802,
-        LayerParams{sizeof(ui32), {32}, modelPath / "sumTest2.bin"}
+        LayerParams{sizeof(fp32), {32}, modelPath / "weight_sum_1.bin"}
     );
 
     // // --- MPL 1: L3 ---
     // // Input shape: 56x56x32
     // // Output shape: 28x28x32
 
-    // model.addLayer<MaxPoolingLayer>(
-    //     LayerParams{sizeof(fp32), {56, 56, 32}},                                    // Input Data
-    //     LayerParams{sizeof(fp32), {28, 28, 32}}                                // Output Data
-    // );
+    model.addLayer<MaxPoolingLayer>(
+        LayerParams{sizeof(fp32), {56, 56, 32}},                                    // Input Data
+        LayerParams{sizeof(fp32), {28, 28, 32}}                                // Output Data
+    );
 
     // // --- Conv 3: L4 ---
     // // Input shape: 28x28x32
     // // Output shape: 26x26x64
 
-    // model.addLayer<ConvolutionalLayer>(
-    //     LayerParams{sizeof(fp32), {28, 28, 32}},                                    // Input Data
-    //     LayerParams{sizeof(fp32), {26, 26, 64}},                                   // Output Data
-    //     LayerParams{sizeof(ui8), {3, 3, 32, 64}, modelPath / "conv2d_2_quantized_weights.bin"}, // Weights
-    //     LayerParams{sizeof(ui32), {64}, modelPath / "conv2d_2_quantized_biases.bin"},            // Bias
-    //     2.5, 0.0, 0.692378
-    // );
+    model.addLayer<ConvolutionalLayer>(
+        LayerParams{sizeof(fp32), {28, 28, 32}},                                    // Input Data
+        LayerParams{sizeof(fp32), {26, 26, 64}},                                   // Output Data
+        LayerParams{sizeof(int8_t), {3, 3, 32, 64}, modelPath / "weight_quant_3.bin"}, // Weights
+        LayerParams{sizeof(fp32), {64}, modelPath / "bias_quant_3.bin"},            // Bias
+        2.5, 0.0, 0.692378,
+        LayerParams{sizeof(fp32), {32}, modelPath / "weight_sum_3.bin"}
+    );
 
     // // --- Conv 4: L5 ---
     // // Input shape: 26x26x64
     // // Output shape: 24x24x64
 
-    // model.addLayer<ConvolutionalLayer>(
-    //     LayerParams{sizeof(fp32), {26, 26, 64}},                                    // Input Data
-    //     LayerParams{sizeof(fp32), {24, 24, 64}},                                   // Output Data
-    //     LayerParams{sizeof(ui8), {3, 3, 64, 64}, modelPath / "conv2d_3_quantized_weights.bin"}, // Weights
-    //     LayerParams{sizeof(ui32), {64}, modelPath / "conv2d_3_quantized_biases.bin"},            // Bias
-    //     1.7, 0.0, 0.541547
-    // );
+    model.addLayer<ConvolutionalLayer>(
+        LayerParams{sizeof(fp32), {26, 26, 64}},                                    // Input Data
+        LayerParams{sizeof(fp32), {24, 24, 64}},                                   // Output Data
+        LayerParams{sizeof(int8_t), {3, 3, 64, 64}, modelPath / "weight_quant_4.bin"}, // Weights
+        LayerParams{sizeof(fp32), {64}, modelPath / "bias_quant_4.bin"},            // Bias
+        1.7, 0.0, 0.541547,
+        LayerParams{sizeof(fp32), {32}, modelPath / "weight_sum_4.bin"}
+    );
 
     // // --- MPL 2: L6 ---
     // // Input shape: 24x24x64
     // // Output shape: 12x12x64
 
-    // model.addLayer<MaxPoolingLayer>(
-    //     LayerParams{sizeof(fp32), {24, 24, 64}},                                    // Input Data
-    //     LayerParams{sizeof(fp32), {12, 12, 64}}                                 // Output Data
-    // );
+    model.addLayer<MaxPoolingLayer>(
+        LayerParams{sizeof(fp32), {24, 24, 64}},                                    // Input Data
+        LayerParams{sizeof(fp32), {12, 12, 64}}                                 // Output Data
+    );
 
     // // --- Conv 5: L7 ---
     // // Input shape: 12x12x64
     // // Output shape: 10x10x64
 
-    // model.addLayer<ConvolutionalLayer>(
-    //     LayerParams{sizeof(fp32), {12, 12, 64}},                                    // Input Data
-    //     LayerParams{sizeof(fp32), {10, 10, 64}},                                   // Output Data
-    //     LayerParams{sizeof(ui8), {3, 3, 64, 64}, modelPath / "conv2d_4_quantized_weights.bin"}, // Weights
-    //     LayerParams{sizeof(ui32), {64}, modelPath / "conv2d_4_quantized_biases.bin"},            // Bias
-    //     1.87, 0.0, 0.536679
-    // );
+    model.addLayer<ConvolutionalLayer>(
+        LayerParams{sizeof(fp32), {12, 12, 64}},                                    // Input Data
+        LayerParams{sizeof(fp32), {10, 10, 64}},                                   // Output Data
+        LayerParams{sizeof(int8_t), {3, 3, 64, 64}, modelPath / "weight_quant_7.bin"}, // Weights
+        LayerParams{sizeof(fp32), {64}, modelPath / "bias_quant_7.bin"},            // Bias
+        1.87, 0.0, 0.536679,
+        LayerParams{sizeof(fp32), {32}, modelPath / "weight_sum_7.bin"}
+    );
 
     // // --- Conv 6: L8 ---
     // // Input shape: 10x10x64
     // // Output shape: 8x8x128
 
-    // model.addLayer<ConvolutionalLayer>(
-    //     LayerParams{sizeof(fp32), {10, 10, 64}},                                    // Input Data
-    //     LayerParams{sizeof(fp32), {8, 8, 128}},                                   // Output Data
-    //     LayerParams{sizeof(ui8), {3, 3, 64, 128}, modelPath / "conv2d_5_quantized_weights.bin"}, // Weights
-    //     LayerParams{sizeof(ui32), {128}, modelPath / "conv2d_5_quantized_biases.bin"},            // Bias
-    //     2.11, 0.0, 0.510655
-    // );
+    model.addLayer<ConvolutionalLayer>(
+        LayerParams{sizeof(fp32), {10, 10, 64}},                                    // Input Data
+        LayerParams{sizeof(fp32), {8, 8, 128}},                                   // Output Data
+        LayerParams{sizeof(int8_t), {3, 3, 64, 128}, modelPath / "weight_quant_8.bin"}, // Weights
+        LayerParams{sizeof(fp32), {128}, modelPath / "bias_quant_8.bin"},            // Bias
+        2.11, 0.0, 0.510655,
+        LayerParams{sizeof(fp32), {32}, modelPath / "weight_sum_8.bin"}
+    );
 
     // // --- MPL 3: L9 ---
     // // Input shape: 8x8x128
     // // Output shape: 4x4x128
 
-    // model.addLayer<MaxPoolingLayer>(
-    //     LayerParams{sizeof(fp32), {8, 8, 128}},                                    // Input Data
-    //     LayerParams{sizeof(fp32), {4, 4, 128}}                                  // Output Data
-    // );
+    model.addLayer<MaxPoolingLayer>(
+        LayerParams{sizeof(fp32), {8, 8, 128}},                                    // Input Data
+        LayerParams{sizeof(fp32), {4, 4, 128}}                                  // Output Data
+    );
 
     // // --- Flatten 1: L10 ---
     // // Input shape: 4x4x128
     // // Output shape: 2048
 
-    // model.addLayer<FlattenLayer>(
-    //     LayerParams{sizeof(fp32), {4, 4, 128}},                                    // Input Data
-    //     LayerParams{sizeof(fp32), {2048}}                                  // Output Data
-    // );
+    model.addLayer<FlattenLayer>(
+        LayerParams{sizeof(fp32), {4, 4, 128}},                                    // Input Data
+        LayerParams{sizeof(fp32), {2048}}                                  // Output Data
+    );
 
 
     // // --- Dense 1: L11 ---
     // // Input shape: 2048
     // // Output shape: 256
 
-    // model.addLayer<DenseLayer>(
-    //     LayerParams{sizeof(fp32), {2048}},                                    // Input Data
-    //     LayerParams{sizeof(fp32), {256}},                                   // Output Data
-    //     LayerParams{sizeof(ui8), {2048*256}, modelPath / "dense_quantized_weights.bin"}, // Weights
-    //     LayerParams{sizeof(ui32), {256}, modelPath / "dense_quantized_biases.bin"},            // Bias
-    //     3.2, 0.0, 0.557585
-    // );
+    model.addLayer<DenseLayer>(
+        LayerParams{sizeof(fp32), {2048}},                                    // Input Data
+        LayerParams{sizeof(fp32), {256}},                                   // Output Data
+        LayerParams{sizeof(int8_t), {2048*256}, modelPath / "dense_weight_quant.bin"}, // Weights
+        LayerParams{sizeof(fp32), {256}, modelPath / "dense_bias_quant.bin"},            // Bias
+        3.2, 0.0, 0.557585
+    );
 
     // // --- Dense 2: L12 ---
     // // Input shape: 256
     // // Output shape: 200
 
-    // model.addLayer<DenseLastLayer>(
-    //     LayerParams{sizeof(fp32), {256}},                                    // Input Data
-    //     LayerParams{sizeof(fp32), {200}},                                   // Output Data
-    //     LayerParams{sizeof(ui8), {256*200}, modelPath / "dense_1_quantized_weights.bin"}, // Weights
-    //     LayerParams{sizeof(ui32), {200}, modelPath / "dense_1_quantized_biases.bin"},            // Bias
-    //     6.63967, 0.0, 1.32412
-    // );
+    model.addLayer<DenseLastLayer>(
+        LayerParams{sizeof(fp32), {256}},                                    // Input Data
+        LayerParams{sizeof(fp32), {200}},                                   // Output Data
+        LayerParams{sizeof(int8_t), {256*200}, modelPath / "dense_weight_1_quant.bin"}, // Weights
+        LayerParams{sizeof(fp32), {200}, modelPath / "dense_bias_1_quant.bin"},            // Bias
+        6.63967, 0.0, 1.32412
+    );
 
     // // --- Softmax 1: L13 ---
     // // Input shape: 200
     // // Output shape: 200
 
-    // model.addLayer<SoftMaxLayer>(
-    //     LayerParams{sizeof(fp32), {200}},                                    // Input Data
-    //     LayerParams{sizeof(fp32), {200}}                                  // Output Data
-    // );
+    model.addLayer<SoftMaxLayer>(
+        LayerParams{sizeof(fp32), {200}},                                    // Input Data
+        LayerParams{sizeof(fp32), {200}}                                  // Output Data
+    );
 
     return model;
 }
@@ -304,13 +307,11 @@ void runTests() {
 
     // Run some framework tests as an example of loading data
     runBasicTest(model, basePath);
-    runLayerTest(0, model, basePath);
-    runLayerTest(1, model, basePath);
 
-    // for(int i = 0; i < 13; i++)
-    // {
-    //     runLayerTest(i, model, basePath);
-    // }
+    for(int i = 0; i < 13; i++)
+    {
+        runLayerTest(i, model, basePath);
+    }
 
     // Run an end-to-end inference test
     //runInferenceTest(model, basePath);
